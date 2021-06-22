@@ -11,24 +11,23 @@ func main() {
 	app := &cli.App{
 		Name:  "jk",
 		Usage: "Make Jenkins like a nice JK",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
+		Commands: []*cli.Command{
+			{
 				Name:    "list",
 				Aliases: []string{"l"},
 				Usage:   "List all jobs",
+				Action: func(c *cli.Context) error {
+					client, ctx, err := getClient()
+					if err != nil {
+						panic(err)
+					}
+					jobs, err := client.GetAllJobs(ctx)
+					for i := range jobs {
+						fmt.Printf("%s\n", jobs[i].GetName())
+					}
+					return nil
+				},
 			},
-		},
-		Action: func(c *cli.Context) error {
-			//name := c.String("search")
-			client, ctx, err := getClient()
-			if err != nil {
-				panic(err)
-			}
-			jobs, err := client.GetAllJobs(ctx)
-			for i := range jobs {
-				fmt.Printf("%s\n", jobs[i].GetName())
-			}
-			return nil
 		},
 	}
 
