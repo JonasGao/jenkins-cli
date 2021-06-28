@@ -75,13 +75,10 @@ func main() {
 						if err != nil {
 							return err
 						}
-						build, err := client.GetBuild(ctx, jobName, num)
+						err = printBuild(client, ctx, jobName, num)
 						if err != nil {
 							return err
 						}
-						running := build.IsRunning(ctx)
-						result := build.GetResult()
-						fmt.Printf("Running: %t; Result: %s", running, result)
 					}
 					return nil
 				},
@@ -101,14 +98,10 @@ func main() {
 					jobName := c.Args().Get(0)
 					ids, err := client.GetAllBuildIds(ctx, jobName)
 					if len(ids) > 0 {
-						id := ids[0]
-						build, err := client.GetBuild(ctx, jobName, id.Number)
+						err = printBuild(client, ctx, jobName, ids[0].Number)
 						if err != nil {
 							return err
 						}
-						running := build.IsRunning(ctx)
-						result := build.GetResult()
-						fmt.Printf("Running: %t; Result: %s", running, result)
 					}
 					return nil
 				},
