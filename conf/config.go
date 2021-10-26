@@ -1,4 +1,4 @@
-package main
+package conf
 
 import (
 	"gopkg.in/yaml.v2"
@@ -18,7 +18,7 @@ var (
 	setting       Config
 )
 
-func readConfig() (Config, error) {
+func ReadConfig() (Config, error) {
 	readingConfig.Do(func() {
 		dirname, err := os.UserHomeDir()
 		if err != nil {

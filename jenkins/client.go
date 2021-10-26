@@ -1,8 +1,9 @@
-package main
+package jenkins
 
 import (
 	"context"
 	"github.com/bndr/gojenkins"
+	"github.com/jonasgao/jenkins-cli/conf"
 	"sync"
 )
 
@@ -12,8 +13,8 @@ var (
 	client     *gojenkins.Jenkins
 )
 
-func getClient() (*gojenkins.Jenkins, context.Context, error) {
-	config, err := readConfig()
+func GetClient() (*gojenkins.Jenkins, context.Context, error) {
+	config, err := conf.ReadConfig()
 	if err != nil {
 		return nil, nil, err
 	}

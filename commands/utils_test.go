@@ -1,9 +1,12 @@
-package main
+package commands
 
-import "testing"
+import (
+	"github.com/jonasgao/jenkins-cli/jenkins"
+	"testing"
+)
 
 func TestPrintBuild(t *testing.T) {
-	client, ctx, err := getClient()
+	client, ctx, err := jenkins.GetClient()
 	if err != nil {
 		t.Errorf("获取客户端报错: %s", err)
 		return
