@@ -3,13 +3,61 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jonasgao/jenkins-cli/jenkins"
 	"github.com/urfave/cli/v2"
+	"os"
 	"strconv"
+	"strings"
 )
 
 func GetCommands() []*cli.Command {
 	return []*cli.Command{
+		{
+			Name:    "get",
+			Aliases: []string{"g"},
+			Usage:   "Get the job",
+			Action: func(c *cli.Context) error {
+				if c.NArg() <= 0 {
+					return errors.New("please provide a JOB name")
+				}
+				jobName := c.Args().Get(0)
+				client, ctx, err := jenkins.GetClient()
+				if err != nil {
+					panic(err)
+				}
+				job, err := client.GetJob(ctx, jobName)
+				if err != nil {
+					panic(err)
+				}
+				_, err = job.Poll(ctx)
+				if err != nil {
+					panic(err)
+				}
+				t := table.NewWriter()
+				t.SetOutputMirror(os.Stdout)
+				t.AppendHeader(table.Row{"#", "Name", "Type", "Default", "Desc / Choices"})
+				for i, s := range job.Raw.Property {
+					for i2, definition := range s.ParameterDefinitions {
+						var desc string
+						if len(definition.Choices) == 0 {
+							desc = definition.Description
+						} else {
+							desc = strings.Join(definition.Choices, ", ")
+						}
+						t.AppendRow([]interface{}{
+							i + i2,
+							definition.Name,
+							definition.Type,
+							definition.DefaultParameterValue.Value,
+							desc,
+						})
+					}
+				}
+				t.Render()
+				return err
+			},
+		},
 		{
 			Name:    "build",
 			Aliases: []string{"b"},

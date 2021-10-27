@@ -3,7 +3,7 @@ package commands
 import (
 	"context"
 	"fmt"
-	"github.com/bndr/gojenkins"
+	"github.com/jonasgao/gojenkins"
 	"strings"
 )
 

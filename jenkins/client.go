@@ -2,7 +2,7 @@ package jenkins
 
 import (
 	"context"
-	"github.com/bndr/gojenkins"
+	"github.com/jonasgao/gojenkins"
 	"github.com/jonasgao/jenkins-cli/conf"
 	"sync"
 )
