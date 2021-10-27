@@ -35,6 +35,7 @@ func GetCommands() []*cli.Command {
 					panic(err)
 				}
 				t := table.NewWriter()
+				t.SetTitle(fmt.Sprintf("Job %s parameters:", jobName))
 				t.SetOutputMirror(os.Stdout)
 				t.AppendHeader(table.Row{"#", "Name", "Type", "Default", "Desc / Choices"})
 				for i, s := range job.Raw.Property {

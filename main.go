@@ -9,9 +9,10 @@ import (
 
 func main() {
 	app := &cli.App{
-		Name:     "jk",
-		Usage:    "Make Jenkins like a nice JK",
-		Commands: commands.GetCommands(),
+		Name:                 "jk",
+		Usage:                "Make Jenkins like a nice JK",
+		Commands:             commands.GetCommands(),
+		EnableBashCompletion: true,
 	}
 
 	err := app.Run(os.Args)
