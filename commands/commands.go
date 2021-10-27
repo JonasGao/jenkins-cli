@@ -62,18 +62,38 @@ func GetCommands() []*cli.Command {
 		{
 			Name:    "build",
 			Aliases: []string{"b"},
-			Usage:   "Build the job",
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:    "params",
+					Aliases: []string{"p"},
+				},
+			},
+			Usage: "Build the job",
 			Action: func(c *cli.Context) error {
 				if c.NArg() <= 0 {
 					return errors.New("please provide a JOB name")
 				}
 				jobName := c.Args().Get(0)
 				client, ctx, err := jenkins.GetClient()
+				job, err := client.GetJob(ctx, jobName)
 				if err != nil {
 					panic(err)
 				}
-				job, err := client.BuildJob(ctx, jobName, nil)
-				fmt.Printf("Build number: %d", job)
+				parameters, err := job.GetParameters(ctx)
+				m := make(map[string]string)
+				if len(parameters) != 0 {
+					value := c.Value("params")
+					entries := strings.Split(fmt.Sprint(value), ";")
+					for _, e := range entries {
+						parts := strings.Split(e, "=")
+						m[parts[0]] = parts[1]
+					}
+				}
+				buildNum, err := client.BuildJob(ctx, jobName, m)
+				if err != nil {
+					panic(err)
+				}
+				fmt.Printf("Build number: %d", buildNum)
 				return err
 			},
 		},
