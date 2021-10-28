@@ -3,10 +3,8 @@ package commands
 import (
 	"errors"
 	"fmt"
-	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jonasgao/jenkins-cli/jenkins"
 	"github.com/urfave/cli/v2"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -34,28 +32,7 @@ func GetCommands() []*cli.Command {
 				if err != nil {
 					panic(err)
 				}
-				t := table.NewWriter()
-				t.SetTitle(fmt.Sprintf("Job %s parameters:", jobName))
-				t.SetOutputMirror(os.Stdout)
-				t.AppendHeader(table.Row{"#", "Name", "Type", "Default", "Desc / Choices"})
-				for i, s := range job.Raw.Property {
-					for i2, definition := range s.ParameterDefinitions {
-						var desc string
-						if len(definition.Choices) == 0 {
-							desc = definition.Description
-						} else {
-							desc = strings.Join(definition.Choices, ", ")
-						}
-						t.AppendRow([]interface{}{
-							i + i2,
-							definition.Name,
-							definition.Type,
-							definition.DefaultParameterValue.Value,
-							desc,
-						})
-					}
-				}
-				t.Render()
+				printParamTable(jobName, job)
 				return err
 			},
 		},
@@ -80,20 +57,28 @@ func GetCommands() []*cli.Command {
 					panic(err)
 				}
 				parameters, err := job.GetParameters(ctx)
-				m := make(map[string]string)
+				// 如果 job 的定义里有参数，则先打印参数
 				if len(parameters) != 0 {
-					value := c.Value("params")
-					entries := strings.Split(fmt.Sprint(value), ";")
+					printParamTable(jobName, job)
+				}
+				// 然后检查是否提供了参数
+				value := c.String("params")
+				var p map[string]string
+				if len(value) != 0 {
+					fmt.Printf("\nWill use parameters:\n")
+					p = make(map[string]string)
+					entries := strings.Split(value, ";")
 					for _, e := range entries {
+						fmt.Println(e)
 						parts := strings.Split(e, "=")
-						m[parts[0]] = parts[1]
+						p[parts[0]] = parts[1]
 					}
 				}
-				buildNum, err := client.BuildJob(ctx, jobName, m)
+				buildNum, err := client.BuildJob(ctx, jobName, p)
 				if err != nil {
 					panic(err)
 				}
-				fmt.Printf("Build number: %d", buildNum)
+				fmt.Printf("\nBuild number: %d", buildNum)
 				return err
 			},
 		},
