@@ -21,7 +21,7 @@ GLOBAL OPTIONS:
 
 ## Usage
 
-First create ".jk.yaml" config file.
+First create ".jk.yaml" config file in "$HOME".
 
 ```yaml
 domain: https://jenkins.com
